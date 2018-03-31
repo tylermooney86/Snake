@@ -4,14 +4,14 @@ import random, pygame, sys
 from pygame.locals import *
 
 ### Set up window size ###
-FPS = 15
+FPS = 10
 WINDOWWIDTH = 640
 WINDOWHEIGHT = 480
 CELLSIZE = 20
 assert WINDOWWIDTH % CELLSIZE==0, "Window width must be a multiple of cell size."
 assert WINDOWHEIGHT % CELLSIZE==0, "Window height must be a multiple of cell size."
 CELLWIDTH = int(WINDOWWIDTH/CELLSIZE)
-CELLHEIGHT = INT(WINDOWHEIGHT/CELLSIZE)
+CELLHEIGHT = int(WINDOWHEIGHT/CELLSIZE)
 
 #        R   G   B
 WHITE = (255,255,255)
@@ -35,7 +35,7 @@ def main():
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    DISPLAYSURF = pygame.display.set_caption('Snake')
+    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
     pygame.display.set_caption('Snake')
 
@@ -48,9 +48,9 @@ def runGame():
     #set random start point
     startx = random.randint(5,CELLWIDTH-6)
     starty = random.randint(5,CELLHEIGHT-6)
-    wormCoords = [('x': startx, 'y': starty),
-    ('x': startx-1, 'y': starty),
-    ('x': startx-2, 'y': starty)]
+    wormCoords = [{'x' : startx, 'y' : starty},
+    {'x': startx-1, 'y': starty},
+    {'x': startx-2, 'y': starty}]
     direction = RIGHT
 
     #start the apple in a random place
@@ -105,13 +105,13 @@ def runGame():
         drawGrid()
         drawSnake(wormCoords)
         drawApple(apple)
-        drawScore(len(wormCoords)-3)
+        drawScore((len(wormCoords)-3) * 10)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.RENDER('Press a key to play.', True, DARKGRAY)
-    perssKeyRect = pressKeySurf.get_rect()
+    pressKeySurf = BASICFONT.render('Press a key to play.', True, DARKGRAY)
+    pressKeyRect = pressKeySurf.get_rect()
     pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
     DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
 
@@ -127,7 +127,34 @@ def checkForKeyPress():
     return keyUpEvents[0].key
 
 def showStartScreen():
-    pass
+    titleFont = pygame.font.Font("freesansbold.ttf", 100)
+    titleSurf1 = titleFont.render("Snake", True, WHITE, DARKGREEN)
+    titleSurf2 = titleFont.render("Snake", True, GREEN)
+
+    degrees1 = 0
+    degrees2 = 0
+
+    while True:
+        DISPLAYSURF.fill(BGCOLOR)
+        rotatedSurf1 = pygame.transform.rotate(titleSurf1, degrees1)
+        rotatedRect1 = rotatedSurf1.get_rect()
+        rotatedRect1.center = (WINDOWWIDTH/2, WINDOWHEIGHT/2)
+        DISPLAYSURF.blit(rotatedSurf1, rotatedRect1)
+
+        rotatedSurf2 = pygame.transform.rotate(titleSurf2, degrees2)
+        rotatedRect2 = rotatedSurf2.get_rect()
+        rotatedRect2.center = (WINDOWWIDTH/2, WINDOWHEIGHT/2)
+        DISPLAYSURF.blit(rotatedSurf2, rotatedRect2)
+
+        drawPressKeyMsg()
+
+        if checkForKeyPress():
+            pygame.event.get()
+            return
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+        degrees1 += 3
+        degrees2 += 7
 
 def terminate():
     pygame.quit()
@@ -137,7 +164,28 @@ def getRandomLocation():
     return {'x': random.randint(0, CELLWIDTH - 1), 'y':random.randint(0, CELLHEIGHT - 1)}
 
 def showGameOverScreen():
-    pass
+    gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
+    gameSurf = gameOverFont.render('GAME', True, WHITE)
+    overSurf = gameOverFont.render('OVER', True, WHITE)
+    gameRect = gameSurf.get_rect()
+    overRect = overSurf.get_rect()
+    gameRect.midtop = (WINDOWWIDTH/2,10)
+    overRect.midtop = (WINDOWWIDTH/2,gameRect.height + 35)
+
+    DISPLAYSURF.blit(gameSurf, gameRect)
+    DISPLAYSURF.blit(overSurf, overRect)
+
+    drawPressKeyMsg()
+    pygame.display.update()
+    pygame.time.wait(500)
+    checkForKeyPress()
+
+    while True:
+        if checkForKeyPress():
+            pygame.event.get()
+            return
+
+
 
 def drawScore(score):
     scoreSurf = BASICFONT.render('Score: %s'%(score), True, WHITE)
@@ -163,7 +211,7 @@ def drawApple(coord):
 def drawGrid():
     for x in range(0, WINDOWWIDTH, CELLSIZE):
         pygame.draw.line(DISPLAYSURF, DARKGRAY, (x,0), (x, WINDOWHEIGHT))
-    for y in range(0, WINDOWWIDTH, CELLSIZE)
+    for y in range(0, WINDOWWIDTH, CELLSIZE):
         pygame.draw.line(DISPLAYSURF, DARKGRAY, (0,y), (WINDOWWIDTH, y))
 
 if __name__ == '__main__':
