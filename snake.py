@@ -20,7 +20,7 @@ RED  = (255,0,0)
 GREEN = (0,255,0)
 DARKGREEN = (0,155,0)
 DARKGRAY = (40,40,40)
-BGCOLOR = BLACK
+BGCOLOR = WHITE
 
 #Controls
 UP = 'up'
@@ -165,11 +165,11 @@ def getRandomLocation():
 
 def showGameOverScreen():
     gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
-    gameSurf = gameOverFont.render('GAME', True, WHITE)
-    overSurf = gameOverFont.render('OVER', True, WHITE)
+    gameSurf = gameOverFont.render('GAME', True, DARKGRAY)
+    overSurf = gameOverFont.render('OVER', True, DARKGRAY)
     gameRect = gameSurf.get_rect()
     overRect = overSurf.get_rect()
-    gameRect.midtop = (WINDOWWIDTH/2,10)
+    gameRect.midtop = (WINDOWWIDTH/2,20)
     overRect.midtop = (WINDOWWIDTH/2,gameRect.height + 35)
 
     DISPLAYSURF.blit(gameSurf, gameRect)
@@ -188,7 +188,7 @@ def showGameOverScreen():
 
 
 def drawScore(score):
-    scoreSurf = BASICFONT.render('Score: %s'%(score), True, WHITE)
+    scoreSurf = BASICFONT.render('Score: %s'%(score), True, DARKGRAY)
     scoreRect = scoreSurf.get_rect()
     scoreRect.topleft = (WINDOWWIDTH - 120, 10)
     DISPLAYSURF.blit(scoreSurf, scoreRect)
